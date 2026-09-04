@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANIMIO-STRIMER</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .glass-panel { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .active-nav { background: linear-gradient(90deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0) 100%); border-left: 4px solid #ef4444; color: #ffffff; }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden select-none bg-[#0b0f19]">
+
+  <div id="authGate" class="fixed inset-0 z-50 bg-[#0b0f19] flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-8 space-y-6 text-center border border-gray-800">
+      <div class="flex justify-center items-center gap-3">
+        <i class="fa-solid fa-play-circle text-red-500 text-4xl"></i>
+        <span class="text-2xl font-black tracking-wider text-white">ANIMIO<span class="text-red-500">.</span></span>
+      </div>
+      <p class="text-xs text-gray-400">Free Access Streaming & Downloader. Sign in to continue.</p>
+
+      <div class="space-y-4 text-left">
+        <div>
+          <label class="text-xs font-semibold text-gray-400">Account Email or Username</label>
+          <input type="text" id="authInputUser" value="user@animio.app" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 text-white mt-1">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-gray-400">Password</label>
+          <input type="password" id="authInputPass" value="••••••••" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 text-white mt-1">
+        </div>
+        <button onclick="handleLogin()" class="w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold text-sm text-white transition shadow-lg shadow-red-600/20">Access ANIMIO Free</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="appInterface" class="flex h-full w-full hidden">
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 glass-panel transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between p-5 border-b border-gray-800">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-play-circle text-red-500 text-3xl"></i>
+            <span class="text-xl font-black tracking-wider text-white">ANIMIO<span class="text-red-500">.</span></span>
+          </div>
+          <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <nav class="mt-4 space-y-1 px-3">
+          <button onclick="switchTab('home')" id="nav-home" class="nav-item w-full active-nav flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium transition text-gray-300">
+            <i class="fa-solid fa-house text-red-500"></i> Home Page
+          </button>
+          <button onclick="switchTab('new')" id="nav-new" class="nav-item w-full flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition">
+            <i class="fa-solid fa-fire text-amber-500"></i> New Section
+          </button>
+          <button onclick="switchTab('live')" id="nav-live" class="nav-item w-full flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition">
+            <i class="fa-solid fa-tower-broadcast text-emerald-500"></i> Watch Live & Football
+          </button>
+          <button onclick="switchTab('share')" id="nav-share" class="nav-item w-full flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition">
+            <i class="fa-solid fa-share-nodes text-purple-400"></i> Share Section
+          </button>
+          <button onclick="switchTab('store')" id="nav-store" class="nav-item w-full flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition">
+            <i class="fa-solid fa-cloud text-cyan-400"></i> Store Section
+          </button>
+          <button onclick="switchTab('private')" id="nav-private" class="nav-item w-full flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition">
+            <i class="fa-solid fa-lock text-rose-500"></i> Private Section
+          </button>
+          <button onclick="switchTab('downloads')" id="nav-downloads" class="nav-item w-full flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition">
+            <i class="fa-solid fa-download text-blue-500"></i> Downloads Section
+          </button>
+        </nav>
+      </div>
+
+      <div class="p-3 border-t border-gray-800">
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-item w-full flex items-center px-4 py-3 rounded-xl gap-3 text-sm font-medium text-gray-400 hover:bg-gray-800/50 hover:text-white transition">
+          <i class="fa-solid fa-gear text-gray-400"></i> Settings Section
+        </button>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col md:ml-64 h-full overflow-hidden">
+
+      <header class="glass-panel sticky top-0 z-30 px-6 py-3 flex items-center justify-between border-b border-gray-800">
+        <div class="flex items-center gap-4 flex-1 max-w-xl">
+          <button onclick="toggleSidebar()" class="md:hidden text-gray-300 hover:text-white">
+            <i class="fa-solid fa-bars text-xl"></i>
+          </button>
+          <div class="relative w-full">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search movies, music, TV shows, football games, anime..." class="w-full bg-gray-900 border border-gray-800 rounded-full py-2 pl-10 pr-4 text-sm text-gray-200 focus:outline-none focus:border-red-500 transition">
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <button onclick="triggerClipboardDetection()" class="hidden sm:flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg text-xs text-red-400 border border-red-500/20 transition">
+            <i class="fa-solid fa-link"></i> Detect Link
+          </button>
+          <div class="flex items-center gap-3 pl-2 border-l border-gray-800">
+            <div id="profileAvatar" class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-bold text-xs text-white uppercase">A</div>
+            <span id="profileNameDisplay" class="text-sm font-semibold hidden lg:inline">User Account</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-6 scrollbar-hide space-y-8" id="mainView">
+
+        <section id="tab-home" class="tab-content space-y-8">
+          <div class="relative rounded-3xl overflow-hidden h-72 md:h-80 bg-cover bg-center flex items-end p-6 md:p-8" style="background-image: linear-gradient(to top, rgba(11, 15, 25, 0.95), transparent), url('https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&q=80&w=1200');">
+            <div class="space-y-3 max-w-xl">
+              <span class="bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Football Match Of The Day</span>
+              <h1 class="text-3xl md:text-4xl font-extrabold text-white">UEFA Champions League Final</h1>
+              <p class="text-gray-300 text-sm">Real Madrid vs Manchester City - Stream live or download high pixel match content.</p>
+              <div class="flex items-center gap-3 pt-2">
+                <button onclick="playMovie('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 'UEFA Champions League Final')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2.5 rounded-xl flex items-center gap-2 text-sm transition">
+                  <i class="fa-solid fa-play"></i> Watch Live
+                </button>
+                <button onclick="openDownloadModal('Champions League Final', 'video', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')" class="bg-gray-800/80 hover:bg-gray-700 text-white font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm border border-gray-700 transition">
+                  <i class="fa-solid fa-download"></i> Download Game
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-film text-red-500"></i> Today's New Movies & Shows</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="homeMoviesGrid"></div>
+          </div>
+
+          <div class="space-y-4">
+            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-music text-purple-400"></i> New Music Releases (Video & MP3)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="homeMusicGrid"></div>
+          </div>
+        </section>
+
+        <section id="tab-new" class="tab-content hidden space-y-6">
+          <h2 class="text-2xl font-bold">Currently New Movies & TV Shows</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="newSectionGrid"></div>
+        </section>
+
+        <section id="tab-live" class="tab-content hidden space-y-6">
+          <div class="glass-panel rounded-3xl p-4 md:p-6 space-y-4">
+            <div class="aspect-video bg-black rounded-2xl overflow-hidden relative flex items-center justify-center">
+              <iframe id="liveVideoPlayer" class="w-full h-full" src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHigh" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="flex justify-between items-center">
+              <div>
+                <h3 class="font-bold text-lg text-white">Live Sports & Global Streams</h3>
+                <p class="text-xs text-gray-400">Streaming active broadcastfeed</p>
+              </div>
+              <span class="bg-red-600 text-xs px-3 py-1 rounded-full font-bold animate-pulse">LIVE</span>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-lg font-bold">Free Football Live Streaming Channels & Webs</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <a href="https://www.fifa.com/plus" target="_blank" class="glass-panel p-4 rounded-2xl flex items-center gap-3 hover:bg-gray-800 transition">
+                <i class="fa-solid fa-circle-play text-red-500 text-2xl"></i>
+                <div>
+                  <h4 class="font-bold text-sm">FIFA+ Free Stream</h4>
+                  <p class="text-xs text-gray-400">Official Matches & Coverage</p>
+                </div>
+              </a>
+              <a href="https://www.skysports.com/football" target="_blank" class="glass-panel p-4 rounded-2xl flex items-center gap-3 hover:bg-gray-800 transition">
+                <i class="fa-solid fa-futbol text-emerald-500 text-2xl"></i>
+                <div>
+                  <h4 class="font-bold text-sm">Sky Sports Live Hub</h4>
+                  <p class="text-xs text-gray-400">Live Football & Scores</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-lg font-bold">Football Game Highlights</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="highlightsGrid"></div>
+          </div>
+        </section>
+
+        <section id="tab-share" class="tab-content hidden space-y-6">
+          <h2 class="text-2xl font-bold">Share Section</h2>
+          <p class="text-sm text-gray-400">Share any content or file downloaded to your device or connected cloud stores.</p>
+          <div class="glass-panel p-6 rounded-2xl text-center space-y-4">
+            <i class="fa-solid fa-share-nodes text-5xl text-purple-400"></i>
+            <h3 class="font-bold text-lg">P2P & Cloud Sharing</h3>
+            <div class="flex justify-center gap-4">
+              <button onclick="openShareModal('Selected Media Item')" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-5 py-2.5 rounded-xl font-bold transition">Share File Link</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-store" class="tab-content hidden space-y-6">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold">Connected Stores</h2>
+            <button onclick="connectCloudStore()" class="bg-red-600 text-xs px-4 py-2 rounded-xl font-bold text-white hover:bg-red-700 transition">+ Connect Store</button>
+          </div>
+          <p class="text-sm text-gray-400">View downloaded files stored directly in your external storage accounts.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="cloudStoresGrid"></div>
+        </section>
+
+        <section id="tab-private" class="tab-content hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fa-solid fa-shield-halved text-rose-500"></i> Private Lock Section</h2>
+            <button onclick="addPrivateFile()" class="bg-rose-600 hover:bg-rose-700 text-white text-base w-9 h-9 rounded-full flex items-center justify-center font-extrabold transition">+</button>
+          </div>
+
+          <div id="privateLockContainer" class="glass-panel p-8 rounded-3xl text-center space-y-4 max-w-md mx-auto my-8">
+            <i class="fa-solid fa-lock text-5xl text-rose-500"></i>
+            <h3 class="font-bold text-lg">Private Vault Locked</h3>
+            <p class="text-xs text-gray-400">Enter your PIN, Password, or Pattern lock to open.</p>
+            <input type="password" id="vaultPin" placeholder="Enter PIN" class="bg-gray-900 text-center text-xl tracking-widest border border-gray-800 rounded-xl py-2.5 w-40 mx-auto block focus:outline-none focus:border-rose-500 text-white">
+            <button onclick="unlockPrivateVault()" class="bg-rose-600 hover:bg-rose-700 text-xs px-6 py-2.5 rounded-xl font-bold text-white transition">Unlock Files</button>
+          </div>
+
+          <div id="privateVaultContent" class="hidden grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </section>
+
+        <section id="tab-downloads" class="tab-content hidden space-y-6">
+          <h2 class="text-2xl font-bold">Downloads Manager</h2>
+          <div class="space-y-3" id="downloadsListContainer"></div>
+        </section>
+
+        <section id="tab-settings" class="tab-content hidden space-y-6 max-w-2xl">
+          <h2 class="text-2xl font-bold">Settings Section</h2>
+
+          <div class="glass-panel p-5 rounded-2xl space-y-4">
+            <h3 class="font-bold text-sm text-gray-300 border-b border-gray-800 pb-2">1. Profile Settings</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="text-xs text-gray-400">Profile Name</label>
+                <input type="text" id="settingProfileName" value="Alex Vance" class="bg-gray-900 border border-gray-800 text-sm rounded-lg px-3 py-2 w-full mt-1 text-white focus:outline-none focus:border-red-500">
+              </div>
+              <button onclick="saveProfileSettings()" class="bg-red-600 text-xs px-4 py-2 rounded-xl font-bold text-white hover:bg-red-700 transition">Update Profile</button>
+            </div>
+          </div>
+
+          <div class="glass-panel p-5 rounded-2xl space-y-4">
+            <h3 class="font-bold text-sm text-gray-300 border-b border-gray-800 pb-2">2. Application & Download Preferences</h3>
+
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold">Smart Muxer Engine</p>
+                <p class="text-xs text-gray-400">Increases download speed, improves success rate, reduces storage space</p>
+              </div>
+              <input type="checkbox" id="settingSmartMuxer" checked class="w-5 h-5 accent-red-600">
+            </div>
+
+            <div class="flex items-center justify-between border-t border-gray-800/60 pt-3">
+              <div>
+                <p class="text-sm font-semibold">Download Complete Notification</p>
+                <p class="text-xs text-gray-400">Get notified when downloads finish</p>
+              </div>
+              <input type="checkbox" id="settingNotification" checked class="w-5 h-5 accent-red-600">
+            </div>
+
+            <div class="flex items-center justify-between border-t border-gray-800/60 pt-3">
+              <div>
+                <p class="text-sm font-semibold">Auto Resume Downloading</p>
+                <p class="text-xs text-gray-400">Resumes interrupted downloads automatically</p>
+              </div>
+              <input type="checkbox" id="settingAutoResume" checked class="w-5 h-5 accent-red-600">
+            </div>
+
+            <div class="flex items-center justify-between border-t border-gray-800/60 pt-3">
+              <div>
+                <p class="text-sm font-semibold">Copied Link Detection</p>
+                <p class="text-xs text-gray-400">Shows download prompt when downloadable link is copied</p>
+              </div>
+              <input type="checkbox" id="settingLinkDetect" checked class="w-5 h-5 accent-red-600">
+            </div>
+
+            <div class="flex items-center justify-between border-t border-gray-800/60 pt-3">
+              <div>
+                <p class="text-sm font-semibold">Download Only In Wi-Fi</p>
+                <p class="text-xs text-gray-400">Restricts download activity to Wi-Fi networks only</p>
+              </div>
+              <input type="checkbox" id="settingWifiOnly" class="w-5 h-5 accent-red-600">
+            </div>
+          </div>
+
+          <div class="glass-panel p-5 rounded-2xl space-y-4">
+            <h3 class="font-bold text-sm text-gray-300 border-b border-gray-800 pb-2">3. Get App (.APK Direct Download)</h3>
+            <p class="text-xs text-gray-400">Scan this QR code to download the ANIMIO Android .apk file directly to your mobile device.</p>
+            <div class="flex justify-center p-3 bg-white rounded-xl w-fit mx-auto" id="qrcode"></div>
+          </div>
+
+          <div class="glass-panel p-5 rounded-2xl">
+            <button onclick="handleLogout()" class="w-full bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white py-3 rounded-xl font-bold text-sm border border-red-500/30 transition">
+              <i class="fa-solid fa-right-from-bracket mr-2"></i> Log Out Account
+            </button>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <div id="videoPlayerModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col justify-center items-center p-4">
+    <div class="w-full max-w-4xl relative space-y-3">
+      <div class="flex justify-between items-center text-white">
+        <h3 id="playerTitleDisplay" class="font-bold text-lg">Now Playing</h3>
+        <button onclick="closeVideoPlayer()" class="bg-red-600 hover:bg-red-700 px-4 py-1.5 rounded-xl text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-xmark"></i> Close Player</button>
+      </div>
+      <video id="activeVideoElement" controls class="w-full rounded-2xl aspect-video bg-black shadow-2xl border border-gray-800">
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support playing this video.
+      </video>
+    </div>
+  </div>
+
+  <div id="downloadModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel max-w-md w-full rounded-3xl p-6 space-y-5 border border-gray-800">
+      <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+        <h3 class="font-bold text-lg text-white" id="dlModalTitle">Download Media</h3>
+        <button onclick="closeModal('downloadModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs text-gray-400 font-semibold">Storage Location</label>
+          <select id="dlStorageTarget" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-sm focus:outline-none focus:border-red-500 text-white mt-1">
+            <option value="Device Local Storage">Direct to Device Storage</option>
+            <option value="Google Drive">Google Drive Store</option>
+            <option value="Dropbox">Dropbox Store</option>
+          </select>
+        </div>
+
+        <div id="videoPixelConfig" class="space-y-1">
+          <label class="text-xs text-gray-400 font-semibold">Video Resolution (Pixels)</label>
+          <select id="dlVideoPixel" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-sm focus:outline-none focus:border-red-500 text-white">
+            <option value="1080p">1080p Full HD Pixel</option>
+            <option value="720p">720p HD Pixel</option>
+            <option value="480p">480p SD Pixel</option>
+            <option value="360p">360p Low Pixel</option>
+          </select>
+        </div>
+
+        <div id="audioKbpsConfig" class="space-y-1">
+          <label class="text-xs text-gray-400 font-semibold">Audio Quality (kbps)</label>
+          <select id="dlAudioKbps" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-sm focus:outline-none focus:border-red-500 text-white">
+            <option value="320 kbps">320 kbps (High Fidelity)</option>
+            <option value="256 kbps">256 kbps (Medium)</option>
+            <option value="128 kbps">128 kbps (Standard)</option>
+            <option value="64 kbps">64 kbps (Compact)</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="executeDownloadTask()" class="w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold text-sm text-white transition">Start Download</button>
+    </div>
+  </div>
+
+  <div id="shareModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel max-w-sm w-full rounded-3xl p-6 space-y-4 text-center border border-gray-800">
+      <h3 class="font-bold text-lg text-white">Share Content</h3>
+      <p class="text-xs text-gray-400" id="shareTargetName">Media Item</p>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="actionShare('Copy Link')" class="glass-panel p-3 rounded-xl hover:bg-gray-800 text-xs flex flex-col items-center gap-2"><i class="fa-solid fa-copy text-lg text-blue-400"></i> Copy Link</button>
+        <button onclick="actionShare('Cloud Storage')" class="glass-panel p-3 rounded-xl hover:bg-gray-800 text-xs flex flex-col items-center gap-2"><i class="fa-solid fa-cloud text-lg text-cyan-400"></i> External Store</button>
+      </div>
+
+      <button onclick="closeModal('shareModal')" class="w-full bg-gray-800 py-2 rounded-xl text-xs font-bold text-gray-300">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const db = {
+      movies: [
+        { id: 'm1', name: 'Sintel (Open Movie)', type: 'Movie', pixel: '1080p', img: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=400', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' },
+        { id: 'm2', name: 'Tears of Steel', type: 'Sci-Fi', pixel: '1080p', img: 'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?auto=format&fit=crop&q=80&w=400', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' },
+        { id: 'm3', name: 'Big Buck Bunny', type: 'Animation', pixel: '720p', img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&q=80&w=400', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }
+      ],
+      music: [
+        { id: 'mu1', name: 'For Bigger Blazes Track', artist: 'Synth Wave', img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=200', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+        { id: 'mu2', name: 'For Bigger Escapes', artist: 'Jane Doe', img: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=200', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' }
+      ],
+      highlights: [
+        { id: 'h1', name: 'El Clásico Match Highlights', duration: '12 mins', img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
+        { id: 'h2', name: 'World Cup Finals Best Goals', duration: '15 mins', img: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyances.mp4' }
+      ],
+      cloudStores: [
+        { name: 'Google Drive', icon: 'fa-brands fa-google-drive text-emerald-400', state: 'Connected' },
+        { name: 'Dropbox', icon: 'fa-brands fa-dropbox text-blue-400', state: 'Connected' }
+      ],
+      downloads: [],
+      privateVault: []
+    };
+
+    let activeDownloadTarget = null;
+
+    function handleLogin() {
+      const user = document.getElementById('authInputUser').value;
+      if (user.trim() !== '') {
+        document.getElementById('authGate').classList.add('hidden');
+        document.getElementById('appInterface').classList.remove('hidden');
+        document.getElementById('profileNameDisplay').innerText = user.split('@')[0];
+        document.getElementById('profileAvatar').innerText = user.charAt(0).toUpperCase();
+        initApplicationData();
+      }
+    }
+
+    function handleLogout() {
+      document.getElementById('appInterface').classList.add('hidden');
+      document.getElementById('authGate').classList.remove('hidden');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active-nav'));
+      
+      const target = document.getElementById(`tab-${tabId}`);
+      const navBtn = document.getElementById(`nav-${tabId}`);
+      if (target) target.classList.remove('hidden');
+      if (navBtn) navBtn.classList.add('active-nav');
+
+      if (window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
+    }
+
+    function initApplicationData() {
+      renderMoviesGrid('homeMoviesGrid', db.movies);
+      renderMoviesGrid('newSectionGrid', db.movies);
+      renderMusicGrid('homeMusicGrid', db.music);
+      renderHighlightsGrid('highlightsGrid', db.highlights);
+      renderCloudStores();
+      renderDownloads();
+      
+      document.getElementById('qrcode').innerHTML = "";
+      new QRCode(document.getElementById("qrcode"), {
+        text: "https://animio.app/download/animio-latest.apk",
+        width: 128,
+        height: 128
+      });
+    }
+
+    function renderMoviesGrid(targetId, list) {
+      const container = document.getElementById(targetId);
+      container.innerHTML = list.map(m => `
+        <div class="glass-panel rounded-2xl p-2 relative group">
+          <div class="relative rounded-xl overflow-hidden aspect-[2/3]">
+            <img src="${m.img}" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+              <button onclick="playMovie('${m.videoUrl}', '${m.name}')" class="bg-emerald-600 text-white p-2.5 rounded-full hover:scale-110 transition" title="Watch Movie"><i class="fa-solid fa-play"></i></button>
+              <button onclick="openDownloadModal('${m.name}', 'video', '${m.videoUrl}')" class="bg-red-600 text-white p-2.5 rounded-full hover:scale-110 transition" title="Download Movie"><i class="fa-solid fa-download"></i></button>
+              <button onclick="openShareModal('${m.name}')" class="bg-gray-800 text-white p-2.5 rounded-full hover:scale-110 transition" title="Share Movie"><i class="fa-solid fa-share-nodes"></i></button>
+            </div>
+          </div>
+          <div class="p-2">
+            <h3 class="font-bold text-sm truncate">${m.name}</h3>
+            <p class="text-xs text-gray-400">${m.type} • ${m.pixel}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderMusicGrid(targetId, list) {
+      const container = document.getElementById(targetId);
+      container.innerHTML = list.map(m => `
+        <div class="glass-panel p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img src="${m.img}" class="w-12 h-12 rounded-xl object-cover">
+            <div>
+              <h4 class="font-bold text-sm">${m.name}</h4>
+              <p class="text-xs text-gray-400">${m.artist} (Video / MP3)</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="playMovie('${m.videoUrl}', '${m.name}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-2 rounded-xl font-bold">
+              <i class="fa-solid fa-play mr-1"></i> Play
+            </button>
+            <button onclick="openDownloadModal('${m.name}', 'music', '${m.videoUrl}')" class="bg-gray-800 text-xs px-3 py-2 rounded-xl border border-gray-700 text-red-400 font-bold">
+              <i class="fa-solid fa-download mr-1"></i> Download
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderHighlightsGrid(targetId, list) {
+      const container = document.getElementById(targetId);
+      container.innerHTML = list.map(h => `
+        <div class="glass-panel p-3 rounded-2xl space-y-2">
+          <div class="aspect-video bg-gray-800 rounded-xl overflow-hidden relative">
+            <img src="${h.img}" class="w-full h-full object-cover">
+          </div>
+          <h4 class="font-bold text-sm">${h.name}</h4>
+          <div class="flex gap-2">
+            <button onclick="playMovie('${h.videoUrl}', '${h.name}')" class="w-1/2 bg-emerald-600 text-white text-xs py-2 rounded-xl hover:bg-emerald-700 transition">Watch</button>
+            <button onclick="openDownloadModal('${h.name}', 'video', '${h.videoUrl}')" class="w-1/2 bg-gray-800 text-xs py-2 rounded-xl hover:bg-gray-700 transition">Download</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function playMovie(videoUrl, title) {
+      const modal = document.getElementById('videoPlayerModal');
+      const video = document.getElementById('activeVideoElement');
+      const source = document.getElementById('videoSource');
+      document.getElementById('playerTitleDisplay').innerText = title;
+
+      source.src = videoUrl;
+      video.load();
+      modal.classList.remove('hidden');
+      video.play();
+    }
+
+    function closeVideoPlayer() {
+      const modal = document.getElementById('videoPlayerModal');
+      const video = document.getElementById('activeVideoElement');
+      
+      video.pause();
+      modal.classList.add('hidden');
+    }
+
+    function renderCloudStores() {
+      const container = document.getElementById('cloudStoresGrid');
+      container.innerHTML = db.cloudStores.map(s => `
+        <div class="glass-panel p-4 rounded-2xl flex items-center gap-4">
+          <i class="${s.icon} text-3xl"></i>
+          <div class="flex-1">
+            <h4 class="font-bold text-sm">${s.name}</h4>
+            <p class="text-xs text-gray-400">Status: ${s.state}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openDownloadModal(title, mode, videoUrl) {
+      activeDownloadTarget = { title, mode, videoUrl };
+      document.getElementById('dlModalTitle').innerText = `Download: ${title}`;
+      document.getElementById('downloadModal').classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function executeDownloadTask() {
+      const targetStore = document.getElementById('dlStorageTarget').value;
+      const pixel = document.getElementById('dlVideoPixel').value;
+      const kbps = document.getElementById('dlAudioKbps').value;
+
+      const formatSpec = activeDownloadTarget.mode === 'video' ? pixel : kbps;
+      
+      // Trigger native browser download for video file
+      if (activeDownloadTarget.videoUrl) {
+        const a = document.createElement('a');
+        a.href = activeDownloadTarget.videoUrl;
+        a.download = activeDownloadTarget.title;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      db.downloads.push({
+        title: activeDownloadTarget.title,
+        store: targetStore,
+        spec: formatSpec,
+        progress: 100
+      });
+
+      closeModal('downloadModal');
+      renderDownloads();
+      switchTab('downloads');
+
+      if (document.getElementById('settingNotification').checked) {
+        alert(`Download Started & Completed: ${activeDownloadTarget.title} (${formatSpec}) saved to ${targetStore}.`);
+      }
+    }
+
+    function renderDownloads() {
+      const container = document.getElementById('downloadsListContainer');
+      if (db.downloads.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500">No active or completed downloads.</p>`;
+        return;
+      }
+      container.innerHTML = db.downloads.map((d, index) => `
+        <div class="glass-panel p-4 rounded-2xl flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-sm">${d.title}</h4>
+            <p class="text-xs text-gray-400">Quality: ${d.spec} • Location: ${d.store}</p>
+          </div>
+          <button onclick="deleteDownload(${index})" class="text-red-400 hover:text-red-600 text-xs font-bold"><i class="fa-solid fa-trash"></i> Delete</button>
+        </div>
+      `).join('');
+    }
+
+    function deleteDownload(index) {
+      db.downloads.splice(index, 1);
+      renderDownloads();
+    }
+
+    function openShareModal(name) {
+      document.getElementById('shareTargetName').innerText = name;
+      document.getElementById('shareModal').classList.remove('hidden');
+    }
+
+    function actionShare(type) {
+      alert(`Shared via ${type}!`);
+      closeModal('shareModal');
+    }
+
+    function connectCloudStore() {
+      const name = prompt('Enter Cloud Store Name (e.g. Mega, OneDrive):');
+      if (name) {
+        db.cloudStores.push({ name, icon: 'fa-solid fa-cloud text-cyan-400', state: 'Connected' });
+        renderCloudStores();
+      }
+    }
+
+    function unlockPrivateVault() {
+      const pin = document.getElementById('vaultPin').value;
+      if (pin !== '') {
+        document.getElementById('privateLockContainer').classList.add('hidden');
+        document.getElementById('privateVaultContent').classList.remove('hidden');
+        renderPrivateVault();
+      }
+    }
+
+    function addPrivateFile() {
+      const filename = prompt('Enter Private File Name to add:');
+      if (filename) {
+        db.privateVault.push(filename);
+        renderPrivateVault();
+      }
+    }
+
+    function renderPrivateVault() {
+      const container = document.getElementById('privateVaultContent');
+      container.innerHTML = db.privateVault.map(f => `
+        <div class="glass-panel p-3 rounded-2xl text-center">
+          <i class="fa-solid fa-file-shield text-3xl text-rose-500 my-2"></i>
+          <p class="text-xs font-bold truncate">${f}</p>
+        </div>
+      `).join('');
+    }
+
+    function saveProfileSettings() {
+      const newName = document.getElementById('settingProfileName').value;
+      document.getElementById('profileNameDisplay').innerText = newName;
+      document.getElementById('profileAvatar').innerText = newName.charAt(0).toUpperCase();
+      alert('Profile updated successfully.');
+    }
+
+    function triggerClipboardDetection() {
+      if (document.getElementById('settingLinkDetect').checked) {
+        alert('Copied Link Detected! Download prompt available for clipboard URL.');
+        openDownloadModal('Clipboard Stream File', 'video', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+      }
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filteredMovies = db.movies.filter(m => m.name.toLowerCase().includes(query));
+      renderMoviesGrid('homeMoviesGrid', filteredMovies);
+    }
+  </script>
+</body>
+</html>
